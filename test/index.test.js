@@ -310,6 +310,17 @@ describe('Intercom', function() {
         });
       });
 
+      it('should send monthly spend', function() {
+        analytics.group('id', { name: 'Name', monthlySpend: 10 });
+        analytics.called(window.Intercom, 'update', {
+          company: {
+            id: 'id',
+            name: 'Name',
+            monthly_spend: 10
+          }
+        });
+      });
+
       it('should work with .created_at', function() {
         analytics.group('id', { name: 'Name', createdAt: 'Jan 1, 2000 3:32:33 PM' });
         analytics.called(window.Intercom, 'update', {
@@ -341,6 +352,16 @@ describe('Intercom', function() {
       it('should send an event', function() {
         analytics.track('event');
         analytics.called(window.Intercom, 'trackEvent', 'event', {});
+      });
+
+      it('should properly send price metadata', function() {
+        analytics.track('event', { revenue: 17.38, currency: 'usd' });
+        analytics.called(window.Intercom, 'trackEvent', 'event', {
+          price: {
+            amount: 1738,
+            currency: 'usd'
+          }
+        });
       });
     });
   });
