@@ -1,5 +1,5 @@
 {
-  "name": "@segment/analytics.js-integration-intercom",
+  "name": "@astronomerio/analytics.js-integration-intercom",
   "description": "The Intercom analytics.js integration.",
   "version": "2.1.1",
   "keywords": [
@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/segment-integrations/analytics.js-integration-intercom.git"
+    "url": "git+https://github.com/astronomer-integrations/analytics.js-integration-intercom.git"
   },
-  "author": "Segment <friends@segment.com>",
+  "author": "Astronomer <info@astronomer.io>",
   "license": "SEE LICENSE IN LICENSE",
   "bugs": {
-    "url": "https://github.com/segment-integrations/analytics.js-integration-intercom/issues"
+    "url": "https://github.com/astronomer-integrations/analytics.js-integration-intercom/issues"
   },
-  "homepage": "https://github.com/segment-integrations/analytics.js-integration-intercom#readme",
+  "homepage": "https://github.com/astronomer-integrations/analytics.js-integration-intercom#readme",
   "dependencies": {
     "@ndhoule/defaults": "^2.0.1",
     "@ndhoule/extend": "^2.0.0",
