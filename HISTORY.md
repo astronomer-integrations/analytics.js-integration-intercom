@@ -1,4 +1,26 @@
 
+3.0.0 / 2017-08-21
+==================
+
+  * Drop support for stringifying/flattened arrays or objects as requested by Intercom
+
+2.2.3 / 2017-02-16
+==================
+
+  * Update modules to support IE browsers
+
+2.2.2 / 2017-02-16
+==================
+
+  * Add option to let customers decide how they would like their custom nested traits to be handled
+  * Fix unsubscribe bug
+  * Add special hanlding for Rich Link
+
+2.1.2 / 2017-02-02
+==================
+
+  * Properly map monthlySpend and revenue for parity with server-side integration
+
 2.1.1 / 2016-09-13
 ==================
 
