@@ -10,7 +10,14 @@ describe('Intercom', function() {
   var analytics;
   var intercom;
   var options = {
-    appId: 'a3vy8ufv'
+    appId: 'a3vy8ufv',
+    blacklisted: {
+      stringifyMe: 'stringify',
+      flattenMe: 'flatten',
+      dropMe: 'drop'
+    },
+    defaultMethod: 'flatten',
+    richLinkProperties: []
   };
 
   beforeEach(function() {
@@ -34,6 +41,7 @@ describe('Intercom', function() {
       .global('Intercom')
       .option('activator', '#IntercomDefaultWidget')
       .option('appId', '')
+      .option('richLinkProperties', [])
       .tag('<script src="https://widget.intercom.io/widget/{{ appId }}">'));
   });
 
@@ -149,6 +157,29 @@ describe('Intercom', function() {
           firstName: 'john',
           lastName: 'doe',
           name: 'baz',
+          id: 'id'
+        });
+      });
+
+      it('should send custom traits', function() {
+        analytics.identify('id', { album: 'Starboy' });
+        analytics.called(window.Intercom, 'boot', {
+          app_id: options.appId,
+          user_id: 'id',
+          album: 'Starboy',
+          id: 'id'
+        });
+      });
+
+      it('should drop arrays or objects in traits', function() {
+        analytics.identify('id', {
+          dropMe: { foo: 'bar', ahoy: { okay: 'hello' } },
+          stringifyMe: [{ a: 'b' }],
+          flattenMe: { pizza: 'cheese', spongebob: { patrick: 'star' } }
+        });
+        analytics.called(window.Intercom, 'boot', {
+          app_id: options.appId,
+          user_id: 'id',
           id: 'id'
         });
       });
@@ -302,6 +333,11 @@ describe('Intercom', function() {
         analytics.called(window.Intercom, 'update', { company: { id: 'id' } });
       });
 
+      it('should send map monthlySpend to monthly_spend', function() {
+        analytics.group('id', { monthlySpend: 17.38 });
+        analytics.called(window.Intercom, 'update', { company: { id: 'id', monthly_spend: 17.38 } });
+      });
+
       it('should send an id and properties', function() {
         analytics.group('id', { name: 'Name' });
         analytics.called(window.Intercom, 'update', {
@@ -337,6 +373,29 @@ describe('Intercom', function() {
           }
         });
       });
+
+      it('should send custom traits', function() {
+        analytics.group('id', { album: 'Starboy' });
+        analytics.called(window.Intercom, 'update', {
+          company: {
+            album: 'Starboy',
+            id: 'id'
+          }
+        });
+      });
+
+      it('should drop arrays or objects in traits', function() {
+        analytics.group('id', {
+          dropMe: { foo: 'bar', ahoy: { okay: 'hello' } },
+          stringifyMe: [{ a: 'b' }],
+          flattenMe: { pizza: 'cheese', spongebob: { patrick: 'star' } }
+        });
+        analytics.called(window.Intercom, 'update', {
+          company: {
+            id: 'id'
+          }
+        });
+      });
     });
 
     describe('#track', function() {
@@ -348,6 +407,47 @@ describe('Intercom', function() {
         analytics.track('event');
         analytics.called(window.Intercom, 'trackEvent', 'event', {});
       });
+
+      it('should map price correctly', function() {
+        analytics.track('event', { revenue: 200.00, currency: 'USD' });
+        analytics.called(window.Intercom, 'trackEvent', 'event', { price: { amount: 20000, currency: 'USD' } });
+      });
+
+      it('should send custom traits', function() {
+        analytics.track('event', { album: 'Starboy' });
+        analytics.called(window.Intercom, 'trackEvent', 'event', {
+          album: 'Starboy'
+        });
+      });
+
+      it('should drop arrays or objects in properties', function() {
+        analytics.track('event', {
+          dropMe: { foo: 'bar', ahoy: { okay: 'hello' } },
+          stringifyMe: [{ a: 'b' }],
+          flattenMe: { pizza: 'cheese', spongebob: { patrick: 'star' } },
+          suh: 'dude'
+        });
+        analytics.called(window.Intercom, 'trackEvent', 'event', {
+          suh: 'dude'
+        });
+      });
+
+      it('should send Rich Link as nested object', function() {
+        intercom.options.richLinkProperties = ['article', 'orderNumber'];
+
+        analytics.track('event', {
+          article: {
+            url: 'www.suh.com',
+            value: 'suh dude'
+          }
+        });
+        analytics.called(window.Intercom, 'trackEvent', 'event', {
+          article: {
+            url: 'www.suh.com',
+            value: 'suh dude'
+          }
+        });
+      });
     });
 
     describe('integration settings', function() {
@@ -357,18 +457,18 @@ describe('Intercom', function() {
 
       it('page: should set hide_default_launcher if integration setting exists for it', function() {
         var integrationSettings = {
-          Intercom: { hideDefaultLauncher: true } 
+          Intercom: { hideDefaultLauncher: true }
         };
         analytics.page({}, integrationSettings);
         analytics.called(window.Intercom, 'boot', {
           app_id: options.appId,
           hide_default_launcher: true
         });
-      }); 
+      });
 
       it('identify: should set hide_default_launcher if integration setting exists for it', function() {
         var integrationSettings = {
-          Intercom: { hideDefaultLauncher: true } 
+          Intercom: { hideDefaultLauncher: true }
         };
         analytics.identify('id', {}, integrationSettings);
         analytics.called(window.Intercom, 'boot', {
@@ -377,18 +477,18 @@ describe('Intercom', function() {
           id: 'id',
           hide_default_launcher: true
         });
-      }); 
+      });
 
       it('group: should set hide_default_launcher if integration setting exists for it', function() {
         var integrationSettings = {
-          Intercom: { hideDefaultLauncher: true } 
+          Intercom: { hideDefaultLauncher: true }
         };
         analytics.group('id', {}, integrationSettings);
         analytics.called(window.Intercom, 'update', {
           company: { id: 'id' },
           hide_default_launcher: true
         });
-      }); 
+      });
     });
   });
 });
